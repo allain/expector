@@ -123,4 +123,19 @@ func TestExpectToError(t *testing.T) {
   if Expect(errors.New("testing error")).ToBeError("testing error").Failed() {
 	  t.Error("should not fail")
   }
+  
+  Expect = New(&testing.T{})
+  if Expect(errors.New("testing")).Not().ToBeError("pass").Failed() {
+	  t.Error("should not fail")
+  }
+  
+  Expect = New(&testing.T{})
+  if !Expect(nil).ToBeError("(").Failed() {
+	  t.Error("should not fail")
+  }
+  
+  Expect = New(&testing.T{})
+  if Expect("pass").Not().ToBeError("pass").Failed() {
+	  t.Error("should fail")
+  }
 }
