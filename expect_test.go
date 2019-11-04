@@ -118,24 +118,24 @@ func TestExpectToMatch(t *testing.T) {
   }
 }
 
-func TestExpectToError(t *testing.T) {
+func TestExpectToMatchError(t *testing.T) {
   Expect := New(&testing.T{})
-  if Expect(errors.New("testing error")).ToBeError("testing error").Failed() {
+  if Expect(errors.New("testing error")).ToMatchError("testing error").Failed() {
 	  t.Error("should not fail")
   }
   
   Expect = New(&testing.T{})
-  if Expect(errors.New("testing")).Not().ToBeError("pass").Failed() {
+  if Expect(errors.New("testing")).Not().ToMatchError("pass").Failed() {
 	  t.Error("should not fail")
   }
   
   Expect = New(&testing.T{})
-  if !Expect(nil).ToBeError("(").Failed() {
+  if !Expect(nil).ToMatchError("(").Failed() {
 	  t.Error("should not fail")
   }
   
   Expect = New(&testing.T{})
-  if Expect("pass").Not().ToBeError("pass").Failed() {
+  if Expect("pass").Not().ToMatchError("pass").Failed() {
 	  t.Error("should fail")
   }
 }

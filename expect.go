@@ -70,8 +70,8 @@ func (e Expect) ToMatch(pattern string) *testing.T {
 	return e.t
 }
 
-// ToBeError fails test if the target is not a matching error
-func (e Expect) ToBeError(regex string) *testing.T {
+// ToMatchError fails test if the target is not a matching error
+func (e Expect) ToMatchError(regex string) *testing.T {
 	err, ok := e.target.(error)
 	if e.inverse {
         if ok {
