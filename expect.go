@@ -6,10 +6,23 @@ import (
 	"testing"
 )
 
+// Options used 
+type Options struct {
+	BailOnFail bool
+}
+
 // New returns a new instance of Expect that wraps the provided testing object
-func New(t *testing.T) func(interface{}) Expect {
+func New(t *testing.T, options ...Options) func(interface{}) Expect {
+	opts := Options{}
+	if len(options) > 0 {
+		opts.BailOnFail = options[0].BailOnFail
+	} else {
+		opts.BailOnFail = true
+	}
+
 	return func(target interface{}) Expect {
 		expect := Expect{t: t, target: target}
+		expect.bailOnFail = opts.BailOnFail
 		return expect
 	}
 }
@@ -19,6 +32,14 @@ type Expect struct {
 	t       *testing.T
 	inverse bool
 	target  interface{}
+	bailOnFail bool
+}
+
+func (e *Expect) result(t *testing.T) *testing.T {
+  if t.Failed() && e.bailOnFail {
+	  t.FailNow()
+  }
+  return t
 }
 
 // ToEqual fails if the expected value does not match the target
@@ -29,7 +50,7 @@ func (e Expect) ToEqual(val interface{}) *testing.T {
 	} else if !e.inverse && !equal {
 		e.t.Errorf("expected %v to equal %v", e.target, val)
 	}
-	return e.t
+	return e.result(e.t)
 }
 
 // ToBeNil fails is the target is not nil
@@ -39,7 +60,7 @@ func (e Expect) ToBeNil() *testing.T {
 	} else if !e.inverse && e.target != nil {
 		e.t.Errorf("expected nil but got %v", e.target)
 	}
-	return e.t
+	return e.result(e.t)
 }
 
 // ToBeTrue fails if target is not true 
@@ -49,7 +70,7 @@ func (e Expect) ToBeTrue() *testing.T {
 	} else if !e.inverse && e.target != true {
 		e.t.Errorf("expected true but got %v", e.target)
 	}
-	return e.t
+	return e.result(e.t)
 }
 
 // ToMatch throws if the expect target does not match the regex
@@ -67,7 +88,7 @@ func (e Expect) ToMatch(pattern string) *testing.T {
   default:
 	e.t.Errorf("regex can only match against string but got %v", e.target)
   }
-	return e.t
+	return e.result(e.t)
 }
 
 // ToMatchError fails test if the target is not a matching error
@@ -93,7 +114,7 @@ func (e Expect) ToMatchError(regex string) *testing.T {
 		}
 	}
 
-	return e.t
+	return e.result(e.t)
 }
 
 // Not returns an expect that negates the matcher
