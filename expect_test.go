@@ -117,6 +117,18 @@ func TestExpectToMatch(t *testing.T) {
   }
 }
 
+func TestExpectToBeError(t *testing.T) {
+  Expect := New(&testing.T{}, Options{BailOnFail: false})
+  if Expect(errors.New("testing error")).ToBeError().Failed() {
+	  t.Error("should not fail")
+  }
+  
+  Expect = New(&testing.T{}, Options{BailOnFail: false})
+  if Expect(nil).Not().ToBeError().Failed() {
+	  t.Error("should not fail")
+  }
+}
+
 func TestExpectToMatchError(t *testing.T) {
   Expect := New(&testing.T{}, Options{BailOnFail: false})
   if Expect(errors.New("testing error")).ToMatchError("testing error").Failed() {

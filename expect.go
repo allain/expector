@@ -91,6 +91,20 @@ func (e Expect) ToMatch(pattern string) *testing.T {
 	return e.result(e.t)
 }
 
+func (e Expect) ToBeError() *testing.T {
+	err, ok := e.target.(error)
+	if e.inverse {
+        if ok {
+			e.t.Errorf("expected no error but got one %w", err)
+		}
+	} else if !ok {
+		e.t.Errorf("expected error but was %v", e.target)
+	}
+
+	return e.result(e.t)
+
+}
+
 // ToMatchError fails test if the target is not a matching error
 func (e Expect) ToMatchError(regex string) *testing.T {
 	err, ok := e.target.(error)
